@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>価値観対戦アプリ</title>
+    <!-- Word保存用ライブラリ -->
+    <script src="https://cdn.jsdelivr.net/npm/html-docx-js@0.3.1/dist/html-docx.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    
     <style>
         /* ベーススタイル */
         body {
@@ -46,6 +50,7 @@
             border: none;
             border-radius: 5px;
             transition: background 0.3s, opacity 0.3s;
+            margin: 5px;
         }
 
         button:disabled {
@@ -62,6 +67,9 @@
 
         .btn-secondary { background-color: #6c757d; color: white; }
         .btn-secondary:hover:not(:disabled) { background-color: #5a6268; }
+
+        .btn-word { background-color: #2b579a; color: white; }
+        .btn-word:hover:not(:disabled) { background-color: #1e3f72; }
 
         .center-area {
             text-align: center;
@@ -335,18 +343,27 @@
         </div>
 
         <h3>現在の順位</h3>
-        <table id="ranking-table">
-            <thead>
-                <tr>
-                    <th class="rank-col">順位</th>
-                    <th class="score-col">得点</th>
-                    <th>項目名</th>
-                    <th>勝ち</th>
-                    <th>負け</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
+        <!-- Word保存ボタン -->
+        <div style="text-align: right; margin-bottom: 5px;">
+            <button id="btn-export-word" class="btn-word" onclick="exportToWord()" style="display:none;">
+                Wordファイルに保存 (.docx)
+            </button>
+        </div>
+
+        <div id="ranking-container">
+            <table id="ranking-table">
+                <thead>
+                    <tr>
+                        <th class="rank-col">順位</th>
+                        <th class="score-col">得点</th>
+                        <th>項目名</th>
+                        <th>勝ち</th>
+                        <th>負け</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
         
         <div class="center-area">
             <button class="btn-secondary" onclick="resetApp()" style="margin-top:30px;">最初からやり直す</button>
@@ -752,6 +769,9 @@
 
             rrTotalMatches = rrPairs.length;
             
+            // Word保存ボタンをリセット
+            document.getElementById('btn-export-word').style.display = 'none';
+
             showScreen('screen-game-roundrobin');
             updateRankingTable();
             nextRoundRobinMatch();
@@ -762,6 +782,9 @@
                 document.getElementById('rr-match-area').style.display = 'none';
                 document.querySelector('#screen-game-roundrobin .btn-success').style.display = 'none';
                 document.getElementById('rr-status').textContent = "すべての対戦が終了しました！結果を確認してください。";
+                
+                // 対戦終了後に保存ボタンを表示
+                document.getElementById('btn-export-word').style.display = 'inline-block';
                 return;
             }
 
@@ -841,6 +864,51 @@
                 `;
                 tbody.appendChild(tr);
             });
+        }
+
+        // ==========================================
+        // 5. Word保存機能
+        // ==========================================
+        function exportToWord() {
+            // テーブル部分のHTMLを取得
+            const tableHtml = document.getElementById('ranking-table').outerHTML;
+            
+            // HTMLのタグ文字列を安全に生成（エスケープ処理）
+            // バックスラッシュでタグの途中のスラッシュをエスケープすることで、
+            // ブラウザがスクリプトの終了と誤認するのを防ぎます。
+            const htmlContent = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>対戦結果<\/title>
+                    <style>
+                        body { font-family: "MS Mincho", "Hiragino Mincho Pro", serif; }
+                        h1 { text-align: center; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                        th, td { border: 1px solid #000; padding: 8px; text-align: left; }
+                        th { background-color: #f2f2f2; }
+                        .rank-col { width: 50px; text-align: center; }
+                        .score-col { width: 60px; text-align: center; }
+                    <\/style>
+                <\/head>
+                <body>
+                    <h1>価値観対戦結果<\/h1>
+                    <p>出力日時: ${new Date().toLocaleString()}<\/p>
+                    ${tableHtml}
+                <\/body>
+                <\/html>
+            `;
+
+            try {
+                // html-docx-jsを使ってBlobに変換
+                const converted = htmlDocx.asBlob(htmlContent);
+                // FileSaver.jsを使って保存
+                saveAs(converted, 'ranking_result.docx');
+            } catch (e) {
+                console.error(e);
+                alert("Wordファイルの生成に失敗しました。");
+            }
         }
 
     </script>
