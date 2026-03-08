@@ -251,20 +251,20 @@
         <div class="mode-selection">
             <!-- モードA -->
             <div class="mode-btn-container">
-                <button class="btn-primary" onclick="startModeA()">A: すべて総当たり</button>
+                <button class="btn-primary" onclick="startModeA()">A: いきなり総当たり</button>
                 <span class="match-count-info" id="info-mode-a">対戦数: -</span>
             </div>
 
             <!-- モードB -->
             <div class="mode-btn-container">
-                <button class="btn-primary" onclick="setupModeB()">B: 絞り込んで総当たり</button>
-                <span class="match-count-info">自分で選んで対戦</span>
+                <button class="btn-primary" onclick="setupModeB()">B: 対戦候補選択 → 総当たり</button>
+                <span class="match-count-info">対戦候補を選んでから総当たり</span>
             </div>
 
             <!-- モードC -->
             <div class="mode-btn-container">
                 <button class="btn-primary" onclick="setupModeC()">C: トーナメント → 総当たり</button>
-                <span class="match-count-info">勝ち抜き戦で減らしてから対戦</span>
+                <span class="match-count-info">勝ち抜き戦で絞り込んでから総当たり</span>
             </div>
         </div>
         <div class="center-area">
@@ -307,7 +307,7 @@
         
         <!-- 残り対戦数表示エリア -->
         <div id="tourn-progress-alert">
-            あと<span id="tourn-remaining-count" class="tourn-count-highlight">0</span>セット勝敗を指定したら指定された数に絞り込めるか（次へ進みます）
+            あと<span id="tourn-remaining-count" class="tourn-count-highlight">0</span>セット勝敗を指定したら指定された数に絞り込めます
         </div>
 
         <div id="tourn-area"></div> <!-- カードが表示される場所 -->
@@ -339,7 +339,7 @@
         </div>
         
         <div class="center-area">
-            <button class="btn-success" onclick="decideRRWinner()">勝者を選んだらここを押す</button>
+            <button class="btn-success" onclick="decideRRWinner()">勝者をクリック（タップ）後、ここを押す</button>
         </div>
 
         <h3>現在の順位</h3>
